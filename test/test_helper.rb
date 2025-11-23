@@ -4,8 +4,6 @@ require "rails/test_help"
 require "bcrypt"
 require 'webmock/minitest'
 
-require 'app_logger'
-
 WebMock.disable_net_connect!(allow_localhost: true, allow: /digitaloceanspaces\.com/)
 
 
@@ -23,5 +21,18 @@ class ActiveSupport::TestCase
 
   def sign_in_as_pas(user, password)
     post(sign_in_url, params: { email: user.email, password: password }); user
+  end
+
+  setup do
+    stub_request(:post, "https://api.postmarkapp.com/servers").
+      to_return(
+        status: 200,
+        body: { id: 'mocked_postmark_server_id', api_tokens: ['first_api_token'] }.to_json,
+      )
+    stub_request(:post, "https://api.postmarkapp.com/webhooks").
+      to_return(
+        status: 200,
+        body: { id: 'mocked_postmark_server_id', api_tokens: ['first_api_token'] }.to_json,
+      )
   end
 end
