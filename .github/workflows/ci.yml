@@ -70,6 +70,7 @@ jobs:
       PGHOST: localhost
       PGUSER: test
       PGPASSWORD: test
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
 
 
     # This sets up a PostgreSQL database service for the job to use
@@ -126,14 +127,11 @@ jobs:
           bun install &&
           bundle install
 
-      - name: Set up test database
-        run: bin/rails db:setup
-
       - name: Precompile assets
         run: bin/rails assets:precompile
 
-      - name: Run Host Application Tests
-        run: bin/rails test
+      - name: Set up test database
+        run: bundle exec rake db:create db:schema:load
 
-      - name: Run Core Engine Tests
-        run: bin/rake test:core_engine
+      - name: Run tests
+        run: bundle exec rails test
