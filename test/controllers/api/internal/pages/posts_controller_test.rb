@@ -78,4 +78,87 @@ class API::Internal::Pages::PostsControllerTest < ActionDispatch::IntegrationTes
     assert_equal 1, posts(:one).authors.count
     assert_equal authors(:without_name), posts(:one).authors.first
   end
+
+  test "should schedule post and publish at scheduled_at timestamp" do
+    sign_in_as(users(:lazaro_nixon))
+    post_record = posts(:post_with_authors)
+
+    scheduled_at = 5.hours.from_now.utc.change(usec: 0)
+
+    assert_enqueued_jobs 0
+
+    post api_internal_pages_post_publish_url(page_id: @page.id, post_id: post_record.id),
+         params: { scheduled_at: scheduled_at },
+         as: :json
+
+    assert_response :ok
+    post_record.reload
+    assert post_record.scheduled?
+    assert_equal scheduled_at, post_record.scheduled_at
+    assert_not_nil post_record.job_id
+
+    assert_enqueued_jobs 1
+
+    travel_to scheduled_at
+
+    perform_enqueued_jobs
+
+    post_record.reload
+    assert post_record.published?
+  end
+
+  test "should not schedule post if scheduled_at is in the past" do
+    sign_in_as(users(:lazaro_nixon))
+    post_record = posts(:post_with_authors)
+
+    scheduled_at = 1.hour.ago.utc
+
+    post api_internal_pages_post_publish_url(page_id: @page.id, post_id: post_record.id),
+         params: { scheduled_at: scheduled_at },
+         as: :json
+
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    assert_includes json_response['error'], "Schedule date must be in future"
+  end
+
+  test "should unschedule post" do
+    sign_in_as(users(:lazaro_nixon))
+    post_record = posts(:post_with_authors)
+
+    # Manually schedule
+    post_record.update!(status: :scheduled, scheduled_at: 1.day.from_now, job_id: '123')
+
+    post api_internal_pages_post_unschedule_url(page_id: @page.id, post_id: post_record.id)
+
+    assert_response :ok
+    post_record.reload
+    assert post_record.draft?
+    assert_nil post_record.job_id
+    assert_nil post_record.scheduled_at
+  end
+
+  test "cannot unschedule not scheduled post" do
+    sign_in_as(users(:lazaro_nixon))
+    post_record = posts(:post_with_authors)
+    assert post_record.draft?
+
+    post api_internal_pages_post_unschedule_url(page_id: @page.id, post_id: post_record.id)
+
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    assert_equal "Post should be scheduled for unscheduling", json_response['error']
+  end
+
+  test "cannot unschedule if job id is nil" do
+    sign_in_as(users(:lazaro_nixon))
+    post_record = posts(:post_with_authors)
+    post_record.update!(status: :scheduled, job_id: nil)
+
+    post api_internal_pages_post_unschedule_url(page_id: @page.id, post_id: post_record.id)
+
+    assert_response :unprocessable_entity
+    json_response = JSON.parse(response.body)
+    assert_equal "Post should have job id", json_response['error']
+  end
 end
