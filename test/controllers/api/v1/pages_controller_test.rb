@@ -11,13 +11,6 @@ module API
 
         @token = APIToken.create!(name: "Test Token", user: @user, workspace: @workspace)
         @headers = { "Authorization" => "Bearer #{@token.token}" }
-
-        # Set base domain for page creation tests
-        ENV['PAGES_BASE_DOMAIN'] = 'blogbowl.test'
-      end
-
-      teardown do
-        ENV.delete('PAGES_BASE_DOMAIN')
       end
 
       # === INDEX (List) ===
