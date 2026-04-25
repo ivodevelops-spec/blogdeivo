@@ -37,12 +37,17 @@ BlogBowl is an open-source, self-hosted blogging platform designed for **blogs, 
 
 ### 🐳 Installing with Docker (Production)
 1. Create .env file and paste content from `.env.example`.
-2. Adjust the values in `.env` to your setup.
-3. To start BlogBowl with postgres and redis run:
+2. Generate a secret key and add it to `.env`:
+    ```bash
+    openssl rand -hex 64
+    # paste the output as SECRET_KEY_BASE=<value> in .env
+    ```
+3. Adjust the remaining values in `.env` to your setup.
+4. To start BlogBowl with postgres and redis run:
     ```bash
     docker compose up -d
     ```
-4. Open your browser and visit:
+5. Open your browser and visit:
     ```
     http://localhost:3000
     ```
