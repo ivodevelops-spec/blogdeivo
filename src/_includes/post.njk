@@ -1,0 +1,10 @@
+---
+layout: layout.njk
+---
+
+<article class="single">
+  <h2>{{ title }}</h2>
+  <div class="meta"><time datetime="{{ page.date | iso }}">{{ page.date | fecha }}</time></div>
+  {{ content | safe }}
+</article>
+<p class="back"><a href="/">&larr; Volver</a></p>

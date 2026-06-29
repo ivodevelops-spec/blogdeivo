@@ -1,0 +1,44 @@
+---
+layout: layout.njk
+---
+
+{%- set categorias = collections.categories %}
+{%- if categorias.length %}
+<nav id="filtros">
+  <button class="cat-btn activo" data-cat="*">Todas</button>
+  {%- for cat in categorias %}
+  <button class="cat-btn" data-cat="{{ cat | slug }}">{{ cat }}</button>
+  {%- endfor %}
+</nav>
+{%- endif %}
+
+{%- for entry in collections.allPosts %}
+<article
+  {% if entry.data.tags and "micro" in entry.data.tags %} class="tweet"{% endif %}
+  data-cats="{%- if entry.data.categories %}{%- for c in entry.data.categories %}{{ c | slug }}{% if not loop.last %} {% endif %}{%- endfor %}{%- endif %}">
+  <div class="meta">
+    {% if entry.data.tags and "micro" in entry.data.tags %}
+    <span class="badge">nota</span>
+    {% else %}
+    <span class="badge">post</span>
+    {% endif %}
+    <time datetime="{{ entry.date | iso }}">{{ entry.date | fecha }}</time>
+    {%- if entry.data.categories %}
+    <span class="cats">
+      {%- for c in entry.data.categories %}
+      <span class="cat-tag">{{ c }}</span>
+      {%- endfor %}
+    </span>
+    {%- endif %}
+  </div>
+  {% if entry.data.tags and "micro" in entry.data.tags %}
+  <div class="tweet-body">{{ entry.templateContent | safe }}</div>
+  {% else %}
+  <h2><a href="{{ entry.url }}">{{ entry.data.title }}</a></h2>
+  <p>{{ entry.templateContent | striptags | truncate(200) }}</p>
+  <p><a href="{{ entry.url }}">Seguir leyendo &rarr;</a></p>
+  {% endif %}
+</article>
+{%- endfor %}
+
+<script src="/static/filter.js"></script>

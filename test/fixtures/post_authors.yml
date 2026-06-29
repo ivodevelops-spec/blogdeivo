@@ -1,9 +1,0 @@
-# keep
-one:
-  post: post_with_authors
-  author: one
-
-default_user_post_author:
-  post: default_user_post_1
-  author: default_user_author
-  role: author

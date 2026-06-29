@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title if title else site.name }}</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="alternate" type="application/rss+xml" href="/feed.xml">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
+</head>
+<body>
+  <header>
+    <h1><a href="/">{{ site.name }}</a></h1>
+    <p class="tagline">{{ site.tagline }}</p>
+  </header>
+  <main>{{ content | safe }}</main>
+  <footer>
+    <p><a href="/feed.xml">RSS</a> &middot; 11ty + Netlify</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,9 @@
+/admin/*
+  Content-Security-Policy: default-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:;
+
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;

@@ -1,0 +1,34 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "src/static/uploads"
+public_folder: "/static/uploads"
+
+collections:
+  - name: "posts"
+    label: "Posts"
+    label_singular: "Post"
+    folder: "src/posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    editor:
+      preview: false
+    fields:
+      - { label: "Titulo", name: "title", widget: "string" }
+      - { label: "Fecha", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - { label: "Categorias", name: "categories", widget: "list", required: false, label_singular: "Categoria" }
+      - { label: "Contenido", name: "body", widget: "markdown" }
+
+  - name: "micro"
+    label: "Notas"
+    label_singular: "Nota"
+    folder: "src/micro"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    editor:
+      preview: false
+    fields:
+      - { label: "Fecha", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - { label: "Categorias", name: "categories", widget: "list", required: false, label_singular: "Categoria" }
+      - { label: "Contenido", name: "body", widget: "markdown" }
